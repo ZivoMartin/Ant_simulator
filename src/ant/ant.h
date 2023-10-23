@@ -2,9 +2,10 @@
 #define safe_ant
 #include "../image/my_image.h"
 #include "../struct/coord.h"
-
+#include <cmath>
 
 class Game;
+int get_dist(coord xy1, coord xy2);
 
 class Ant : public My_image{
 
@@ -22,5 +23,5 @@ private:
 };
 
 int random(int min, int max);
-
+int get_angle(int h, int a);
 #endif 

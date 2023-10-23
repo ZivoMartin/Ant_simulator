@@ -67,3 +67,7 @@ void Game::move_ants(){
         ant_tab[i]->move();
     }
 }
+
+int get_dist(coord xy1, coord xy2){
+    return (xy1.x-xy2.x)*(xy1.x-xy2.x) + (xy1.y-xy2.y)*(xy1.y-xy2.y);
+}

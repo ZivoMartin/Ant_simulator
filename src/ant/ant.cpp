@@ -9,6 +9,7 @@ Ant::~Ant(){}
 
 
 void Ant::set_pos(coord xy){
+    rotate(get_angle(get_dist(xy, position), abs(position.x-xy.x)));
     position = xy;
     set_pos_img(xy);
 }
@@ -33,4 +34,9 @@ int abs(int x){
         return -x;
     }
     return x;
+}
+
+int get_angle(int h, int a){
+    double tmp = a/h;
+    return std::acos(tmp);
 }

@@ -39,5 +39,6 @@ private:
 };
 
 int random(int min, int max);
+int get_dist(coord xy1, coord xy2)
 
 #endif
