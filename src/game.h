@@ -3,10 +3,12 @@
 
 #include <QMainWindow>
 #include <iostream>
+#include <random>
+#include <QTimer>
 #include "view/my_view.h"
 #include "image/my_image.h"
-#include "src/ant/ant.h"
-#include "src/ant/anthill.h"
+#include "ant/ant.h"
+#include "ant/anthill.h"
 
 
 class Game : public QMainWindow{
@@ -16,19 +18,26 @@ public:
     ~Game();
     void build_image();
     My_view *get_view();
+    void init_ant_tab();
+    void move_ants();
+    void start();
+    void delete_ant(int i);
 
     QPixmap ant_img;
     QPixmap anthill_img;
 
-    static const int height = 1000;
-    static const int width = 1000;
+    static const int map_height = 1000;
+    static const int map_width = 1000;
 
 private:
     My_view *view;
-    std::vector<Ant> ant_tab;
+    std::vector<Ant*> ant_tab;
     Anthill *anthill;
-    int nb_ant;
+    int nb_start_ant = 10;
+    coord anthill_coord;
 
 };
+
+int random(int min, int max);
 
 #endif
