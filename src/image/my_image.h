@@ -5,6 +5,8 @@
 #include <QPixmap>
 #include <QGraphicsScene>
 #include "../struct/coord.h"
+#include <cmath>
+
 
 
 class My_image : QGraphicsPixmapItem{
