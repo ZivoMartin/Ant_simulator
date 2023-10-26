@@ -29,6 +29,8 @@ private:
     int current_angle = 0;
     int pas_angle = 4;
     int food_state = 0;
+    int state_count;
+    Food *current_food;
 };
 
 int get_angle(float o, float a);

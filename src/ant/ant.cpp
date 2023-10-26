@@ -4,6 +4,7 @@
 Ant::Ant(Game *game, coord xy) : My_image(game->ant_img, game->get_view()->get_scene(), xy){
     position = xy;
     this->game = game;
+    state_count = game->time_to_recup;
 }   
 
 Ant::~Ant(){}
@@ -22,6 +23,9 @@ void Ant::set_pos(coord xy){
     position.x = xy.x;
     position.y = xy.y;
     set_pos_img(position);
+    if(food_state == 3){
+        current_food->set_pos({position.x+current_dir.x-30, position.y+current_dir.y - 30});
+    }
 }
 
 void Ant::rotate_to_goal(){
@@ -47,27 +51,54 @@ void Ant::rotate_to_goal(){
 }
 
 void Ant::move(){
-    if(food_state == 0){
-        Food *nearest_spot = get_nearest_spot(); 
-        if(get_dist(nearest_spot->get_pos(), position)<game->range_ant*game->range_ant){
-            go_on_this_point(nearest_spot->get_pos());
-            food_state = 1;
-        }else if(random_count == 0){
-            get_new_random_dir();
-            random_count = 150;
-        }else{
-            random_count -= 1;
+    if((food_state == 3 || food_state == 1 || food_state == 2) && current_food == nullptr){
+        food_state = 0;
+    }else{
+        if(food_state == 0){
+            Food *nearest_spot = get_nearest_spot(); 
+            if(get_dist(nearest_spot->get_pos(), position)<game->range_ant*game->range_ant){
+                go_on_this_point(nearest_spot->get_pos());
+                current_food = nearest_spot;
+                food_state = 1;
+            }else if(random_count == 0){
+                get_new_random_dir();
+                random_count = 150;
+            }else{
+                random_count -= 1;
+            }
+        }else if(food_state == 1 || food_state == 3){
+            go_on_this_point(target_pos);
+            int s = 20;
+            if(target_pos.x-s <= position.x && target_pos.x+s >= position.x && target_pos.y-s <= position.y && target_pos.y+s >= position.y){
+                if(food_state == 3){
+                    delete current_food;
+                }
+                food_state += 1;
+                current_dir.x = 0;
+                current_dir.y = 0;
+            }
+        }else if(food_state == 2){
+            state_count -= 1;
+            if(state_count == 0){
+                food_state = 3;
+                state_count = game->time_to_drop;
+                target_pos = game->get_anthill_coord();
+                if(current_food->decrease_nb_food_remain()){
+                    game->delete_food_spot(current_food, -1);
+                }
+                current_food = new Food(position, game, game->piece_food_size);
+            }
+        }else if(food_state == 4){
+            state_count -= 1;
+            if(state_count == 0){
+                state_count = game->time_to_recup;
+                food_state = 0;
+                game->add_ant();
+            }
         }
-    }else if(food_state == 1){
-        go_on_this_point(target_pos);
-        if(target_pos.x-20 <= position.x && target_pos.x+20 >= position.x && target_pos.y-20 <= position.y && target_pos.y+20 >= position.y){
-            food_state = 2;
-            current_dir.x = 0;
-            current_dir.y = 0;
-        }
-    }else if(food_state == 2){
+        set_pos({current_dir.x + position.x, current_dir.y + position.y});
     }
-    set_pos({current_dir.x + position.x, current_dir.y + position.y});
+   
 }
 
 Food *Ant::get_nearest_spot(){

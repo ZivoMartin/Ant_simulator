@@ -29,6 +29,9 @@ public:
     void setup_scene();
     Food *get_food(unsigned int i);
     int get_nb_food_spot();
+    coord get_anthill_coord();
+    void add_ant();
+    void delete_food_spot(Food *food_spot, int i);
 
     QPixmap ant_img;
     QPixmap anthill_img;
@@ -36,8 +39,11 @@ public:
     static const int map_height = 15000;
     static const int map_width = 15000;
     static const int size_food = 100;
+    static const int piece_food_size = 20;
     static const int range_ant = 1000;
     static const int ant_speed = 5;
+    static const int time_to_recup = 200;
+    static const int time_to_drop = 50;
 
     QBrush *food_brush;
 
@@ -46,7 +52,7 @@ private:
     std::vector<Ant*> ant_tab;
     std::vector<Food*> food_tab;
     Anthill *anthill;
-    int nb_start_ant = 1; 
+    int nb_start_ant = 10; 
     int nb_start_food_spot = 100; 
     coord anthill_coord;
     int iter = 0;

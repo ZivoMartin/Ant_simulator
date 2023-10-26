@@ -41,7 +41,7 @@ void Game::setup_scene(){
     view->centerOn(centerPoint);
     view->get_scene()->setSceneRect(0, 0, map_width, map_height);
     QTransform transform = view->transform();
-    double zoomFactor = 2.0;
+    double zoomFactor = 4.0;
     transform.scale(1.0 / zoomFactor, 1.0 / zoomFactor);
     view->setTransform(transform);
 }
@@ -76,14 +76,35 @@ void Game::build_brush(){
 
 void Game::init_ant_tab(){
     for(int i=0; i<nb_start_ant; i++){
-        ant_tab.push_back(new Ant(this, anthill_coord));
+        add_ant();
     }
 }
 
 void Game::init_food_spots(){
     for(int i=0; i<nb_start_food_spot; i++){
-        food_tab.push_back(new Food({random(0, map_width), random(0, map_height)}, this));
+        int x = random(0, map_width);
+        int y = random(0, map_height);
+        while(x>anthill_coord.x-range_ant && x<anthill_coord.x+range_ant && y>anthill_coord.y-range_ant && y<anthill_coord.y+range_ant){
+            x = random(0, map_width);
+            y = random(0, map_height);
+        }
+        food_tab.push_back(new Food({x, y}, this, size_food));
     }
+}
+
+void Game::delete_food_spot(Food *food_spot, int i){
+    if(i == -1){
+        i = 0;
+        while(food_spot != food_tab[i]){
+            i += 1;
+        }
+    }
+    delete food_tab[i];
+    food_tab.erase(food_tab.begin() + i);
+}
+
+void Game::add_ant(){
+    ant_tab.push_back(new Ant(this, anthill_coord));
 }
 
 void Game::start(){
@@ -102,6 +123,10 @@ void Game::move_ants(){
     }
 }
 
+coord Game::get_anthill_coord(){
+    return anthill_coord;
+}
+
 int Game::get_iter(){
     return iter;
 }
@@ -109,4 +134,3 @@ int Game::get_iter(){
 int get_dist(coord xy1, coord xy2){
     return (xy1.x-xy2.x)*(xy1.x-xy2.x) + (xy1.y-xy2.y)*(xy1.y-xy2.y);
 }
-
