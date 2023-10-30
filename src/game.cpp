@@ -12,6 +12,7 @@ int random(int min, int max){
 Game::Game(My_view *view): QMainWindow(){
     this->view = view;
     this->anthill_coord = {map_width/2, map_height/2};
+    setFocusPolicy(Qt::StrongFocus);
     setup_scene();
     build_image();
     build_brush();
@@ -32,18 +33,23 @@ Game::~Game(){
     }
     delete anthill;
     delete food_brush;
+    delete pheromone_brush;
+    delete background_color;
+    delete pheromone_background;
 }
 
+
+
+
 void Game::setup_scene(){
-    QColor backgroundColor(210, 180, 140);
-    view->get_scene()->setBackgroundBrush(backgroundColor);
+    this->background_color = new QColor(210, 180, 140);
+    this->pheromone_background = new QColor(20, 20, 20);
+    view->set_bg_color(background_color);
     QPointF centerPoint(anthill_coord.x-1500, anthill_coord.y-900);
     view->centerOn(centerPoint);
     view->get_scene()->setSceneRect(0, 0, map_width, map_height);
-    QTransform transform = view->transform();
-    double zoomFactor = 4.0;
-    transform.scale(1.0 / zoomFactor, 1.0 / zoomFactor);
-    view->setTransform(transform);
+    view->zoom(4);
+
 }
 
 My_view *Game::get_view(){
@@ -72,6 +78,8 @@ int Game::get_nb_food_spot(){
 void Game::build_brush(){
     QColor color(0, 154, 23);
     this->food_brush = new QBrush(color);
+    QColor color2(214, 107, 91);
+    this->pheromone_brush = new QBrush(color2);
 } 
 
 void Game::init_ant_tab(){
@@ -107,6 +115,7 @@ void Game::add_ant(){
     ant_tab.push_back(new Ant(this, anthill_coord));
 }
 
+
 void Game::start(){
     QTimer::singleShot(20, this, [=](){
         move_ants();
@@ -123,12 +132,50 @@ void Game::move_ants(){
     }
 }
 
+void Game::actualise_ant_state(Food *deleted_food){
+    int size = ant_tab.size();
+    for(int i=0; i<size; i++){
+        if((ant_tab[i]->get_food_state() == 1 || ant_tab[i]->get_food_state() == 2) && (ant_tab[i]->get_current_food() == deleted_food || ant_tab[i]->get_current_food() == deleted_food)){
+            ant_tab[i]->reset_state();
+        }
+    }
+}
+
+void Game::change_view_state(){
+    if(view_state == 0){
+        view_state = 1;
+        unsigned int nb_food_spot = food_tab.size();
+        for(unsigned int i=0; i<nb_food_spot; i++){
+            unsigned int size = food_tab[i]->get_nb_fake_phero();
+            for(unsigned int j=0; j<size; j++){
+                food_tab[i]->get_fake_pheromone(j)->display();
+            }
+        }  
+        view->set_bg_color(pheromone_background);
+    }else{
+        view_state = 0;
+        unsigned int nb_food_spot = food_tab.size();
+        for(unsigned int i=0; i<nb_food_spot; i++){
+            unsigned int size = food_tab[i]->get_nb_fake_phero();
+            for(unsigned int j=0; j<size; j++){
+                food_tab[i]->get_fake_pheromone(j)->remove();
+            }
+        }
+        view->set_bg_color(background_color);
+    }
+}
+
+
 coord Game::get_anthill_coord(){
     return anthill_coord;
 }
 
 int Game::get_iter(){
     return iter;
+}
+
+int Game::get_view_state(){
+    return view_state;
 }
 
 int get_dist(coord xy1, coord xy2){

@@ -17,6 +17,12 @@ public:
     void rotate_to_goal();
     void go_on_this_point(coord xy);
     Food *get_nearest_spot();
+    Pheromone *get_nearest_pheromone();
+    Food *get_current_food();
+    Food *get_affiliate_food();
+    int get_food_state();
+    void reset_state();
+
 
 private:
     int random_count = 0;
@@ -30,7 +36,10 @@ private:
     int pas_angle = 4;
     int food_state = 0;
     int state_count;
-    Food *current_food;
+    Food *current_food = nullptr;
+    Food *food_transported = nullptr;
+    Food *affiliate_food = nullptr;
+    bool authorised_to_place_pheromone = false;
 };
 
 int get_angle(float o, float a);

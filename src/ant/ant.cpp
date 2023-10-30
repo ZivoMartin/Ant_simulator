@@ -24,7 +24,7 @@ void Ant::set_pos(coord xy){
     position.y = xy.y;
     set_pos_img(position);
     if(food_state == 3){
-        current_food->set_pos({position.x+current_dir.x-30, position.y+current_dir.y - 30});
+        food_transported->set_pos({position.x+current_dir.x-30, position.y+current_dir.y - 30});
     }
 }
 
@@ -51,54 +51,111 @@ void Ant::rotate_to_goal(){
 }
 
 void Ant::move(){
-    if((food_state == 3 || food_state == 1 || food_state == 2) && current_food == nullptr){
-        food_state = 0;
-    }else{
-        if(food_state == 0){
-            Food *nearest_spot = get_nearest_spot(); 
-            if(get_dist(nearest_spot->get_pos(), position)<game->range_ant*game->range_ant){
-                go_on_this_point(nearest_spot->get_pos());
-                current_food = nearest_spot;
-                food_state = 1;
+  
+    if(food_state == 0){
+        Food *nearest_spot = get_nearest_spot(); 
+        if(get_dist(nearest_spot->get_pos(), position)<game->range_ant*game->range_ant){
+            go_on_this_point(nearest_spot->get_pos());
+            current_food = nearest_spot;
+            food_state = 1;
+        }else{
+            Pheromone *nearest_pheromone = get_nearest_pheromone();
+            if(nearest_pheromone != nullptr && get_dist(nearest_pheromone->get_pos(), position)<game->range_ant*game->range_ant){
+                go_on_this_point(nearest_pheromone->get_pos());
+                food_state = 1; 
             }else if(random_count == 0){
                 get_new_random_dir();
                 random_count = 150;
             }else{
                 random_count -= 1;
-            }
-        }else if(food_state == 1 || food_state == 3){
+            }   
+        }
+        
+    }else if(food_state == 1 || food_state == 3){
+        if(game->get_iter() % 7 == 0){
             go_on_this_point(target_pos);
-            int s = 20;
-            if(target_pos.x-s <= position.x && target_pos.x+s >= position.x && target_pos.y-s <= position.y && target_pos.y+s >= position.y){
-                if(food_state == 3){
-                    delete current_food;
-                }
+        }
+        if(game->get_iter() % 80 == 0 && food_state == 3 && authorised_to_place_pheromone){
+            current_food->add_pheromone(position);
+        }
+        if(game->get_iter() % 10 == 0 && food_state == 3 && authorised_to_place_pheromone){
+            current_food->add_fake_pheromone(position);
+        }
+        int s = 40;
+        if(target_pos.x-s <= position.x && target_pos.x+s >= position.x && target_pos.y-s <= position.y && target_pos.y+s >= position.y){
+            if(food_state == 3){
+                delete food_transported;
+                authorised_to_place_pheromone = false;
+            }
+            if(current_food == nullptr){
+                current_food = affiliate_food;
+                target_pos = affiliate_food->get_pos();
+            }else{
                 food_state += 1;
-                current_dir.x = 0;
-                current_dir.y = 0;
             }
-        }else if(food_state == 2){
-            state_count -= 1;
-            if(state_count == 0){
-                food_state = 3;
-                state_count = game->time_to_drop;
-                target_pos = game->get_anthill_coord();
-                if(current_food->decrease_nb_food_remain()){
-                    game->delete_food_spot(current_food, -1);
-                }
-                current_food = new Food(position, game, game->piece_food_size);
+            current_dir.x = 0;
+            current_dir.y = 0;
+        }
+    }else if(food_state == 2){
+        state_count -= 1;
+        if(state_count == 0){
+            food_state = 3;
+            state_count = game->time_to_drop;
+            target_pos = game->get_anthill_coord();
+            if(current_food->decrease_nb_food_remain()){
+                game->delete_food_spot(current_food, -1);
             }
-        }else if(food_state == 4){
-            state_count -= 1;
-            if(state_count == 0){
-                state_count = game->time_to_recup;
-                food_state = 0;
-                game->add_ant();
+            go_on_this_point(target_pos);
+            food_transported = new Food(position, game, game->piece_food_size);
+            if(!current_food->get_phero_path_bool()){
+                authorised_to_place_pheromone = true;
+                current_food->path_created();
             }
         }
-        set_pos({current_dir.x + position.x, current_dir.y + position.y});
+    }else if(food_state == 4){
+        state_count -= 1;
+        if(state_count == 0){
+            game->add_ant();
+            reset_state();
+        }
     }
-   
+    set_pos({current_dir.x + position.x, current_dir.y + position.y});
+    
+}
+
+Pheromone *Ant::get_nearest_pheromone(){
+    int size = game->get_nb_food_spot();
+    int min = -1;
+    int i_spot = -1;
+    int i_pheromone = -1;
+    for(int i=0; i<size; i++){
+        Food *the_food = game->get_food(i);
+        if(the_food->get_phero_path_bool()){
+            int size2 = the_food->get_nb_phero(); 
+            for(int j=0; j<size2; j++){
+                if(min == -1){
+                    min = get_dist(position, the_food->get_pheromone(j)->get_pos());
+                    i_spot = i;
+                    i_pheromone = j;
+                }else{
+                    int d = get_dist(position, the_food->get_pheromone(j)->get_pos());
+                    if(d<min){
+                        min = d;
+                        i_spot = i;
+                        i_pheromone = j;
+                    }
+                }
+            }    
+        }
+        
+    }
+    if(min == -1){
+        return nullptr;
+    }else{
+        affiliate_food = game->get_food(i_spot);
+        return game->get_food(i_spot)->get_pheromone(i_pheromone);
+    }
+    
 }
 
 Food *Ant::get_nearest_spot(){
@@ -123,6 +180,26 @@ void Ant::get_new_random_dir(){
     if(random(1, 2) == 1){
         current_dir.y *= -1;
     }
+}
+
+Food *Ant::get_current_food(){
+    return current_food;
+}
+
+Food *Ant::get_affiliate_food(){
+    return affiliate_food;
+}
+
+int Ant::get_food_state(){
+    return food_state;
+}
+
+void Ant::reset_state(){
+    current_food = nullptr;
+    affiliate_food = nullptr;
+    food_transported = nullptr;
+    food_state = 0;
+    state_count = game->time_to_recup;
 }
 
 int abs(int x){
@@ -171,15 +248,3 @@ void Ant::go_on_this_point(coord xy){
     float new_dir_y = y1 - ((x1+new_dir_x)*m + b);
     current_dir.y = new_dir_y;
 }
-
-
-// m = (y1-y2)/(x1-x2)
-// factor = 1
-// if(x1>x2):
-//     m = (y2-y1)/(x2-x1)
-//     factor = -1
-// dist = math.sqrt((x1-x2)**2 + (y1-y2)**2)
-// b = y1 - m*x1
-// return m, dist, b, factor
-// self.x = self.click_x - int(self.f*(self.d/math.sqrt(self.m**2 + 1)))
-// self.y = int(self.x*self.m + self.b)

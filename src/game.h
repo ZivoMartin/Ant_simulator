@@ -14,6 +14,7 @@
 
 class Game : public QMainWindow{
 
+
 public: 
     Game(My_view *view);
     ~Game();
@@ -32,7 +33,10 @@ public:
     coord get_anthill_coord();
     void add_ant();
     void delete_food_spot(Food *food_spot, int i);
-
+    int get_view_state();
+    void actualise_ant_state(Food *deleted_food);
+    void change_view_state();
+    
     QPixmap ant_img;
     QPixmap anthill_img;
 
@@ -42,10 +46,14 @@ public:
     static const int piece_food_size = 20;
     static const int range_ant = 1000;
     static const int ant_speed = 5;
-    static const int time_to_recup = 200;
-    static const int time_to_drop = 50;
+    static const int time_to_recup = 70;
+    static const int time_to_drop = 20;
+    static const int pheromone_size = 50;
+    
 
     QBrush *food_brush;
+    QBrush *pheromone_brush;
+
 
 private:
     My_view *view;
@@ -56,6 +64,9 @@ private:
     int nb_start_food_spot = 100; 
     coord anthill_coord;
     int iter = 0;
+    int view_state = 0;
+    QColor *background_color;
+    QColor *pheromone_background; 
 };
 
 int random(int min, int max);
