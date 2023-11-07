@@ -4,6 +4,7 @@
 #include <QGraphicsEllipseItem>
 #include <QColor>
 #include <QBrush>
+#include <iostream>
 #include "../struct/coord.h"
 
 class Game;
@@ -11,9 +12,9 @@ class Game;
 class Pheromone : public QGraphicsEllipseItem{
 
 public:
-    Pheromone(coord xy, Game *game, int h, bool display_it);
+    Pheromone(coord xy, Game *game, bool display_it, QColor *color);
     ~Pheromone();
-    coord get_pos();
+    coord *get_pos();
     void display();
     void remove();
 
@@ -21,7 +22,6 @@ public:
 private:
     Game *game;
     coord position;
-    int height;
     bool visible = false;
 };
 

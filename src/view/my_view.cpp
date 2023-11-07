@@ -25,13 +25,31 @@ void My_view::keyPressEvent(QKeyEvent* event){
     }
 }
 
+
+void My_view::mousePressEvent(QMouseEvent* event){
+    if(game->get_config_mode() && event->type() == QEvent::MouseButtonPress){
+        if(event->button() == 1){
+            printf("Left\n");
+        }else if(event->button() == 2){
+            printf("Right\n");
+        }
+    }
+}
+
 void My_view::set_game(Game *game){
     this->game = game;
 }
 
+
 void My_view::set_bg_color(QColor *color){
     QBrush brush(*color);
     scene->setBackgroundBrush(brush);
+}
+
+void My_view::set_bg_img(QString path){
+    QImage img(path);
+    img = img.scaled(game->get_screen_size()->width, game->get_screen_size()->height, Qt::IgnoreAspectRatio);
+    setBackgroundBrush(img);
 }
 
 void My_view::zoom(double factor){

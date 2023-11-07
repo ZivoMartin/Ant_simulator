@@ -12,7 +12,10 @@ public:
     Anthill(Game* game, coord xy);
     ~Anthill();
     void set_pos(coord xy);
+    coord *get_pos();
 
+private:
+    coord position;
 };
 
 

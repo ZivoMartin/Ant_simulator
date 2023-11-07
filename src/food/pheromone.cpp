@@ -1,11 +1,11 @@
 #include "food.h"
 #include "../game.h"
 
-Pheromone::Pheromone(coord xy, Game *game, int s, bool display_it) : QGraphicsEllipseItem(xy.x, xy.y, s, s){
-    this->height = s;
+Pheromone::Pheromone(coord xy, Game *game, bool display_it, QColor *color) : QGraphicsEllipseItem(xy.x, xy.y, game->phero_img_size, game->phero_img_size){
     this->game = game;
     this->position = xy;
-    this->setBrush(*(game->pheromone_brush));
+    QBrush brush(*color);
+    this->setBrush(brush);
     if(display_it){
         display();
     }
@@ -27,6 +27,6 @@ void Pheromone::remove(){
     visible = false;
 }
 
-coord Pheromone::get_pos(){
-    return position;
+coord *Pheromone::get_pos(){
+    return &position;
 }
