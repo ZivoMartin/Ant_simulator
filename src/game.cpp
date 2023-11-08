@@ -17,7 +17,6 @@ Game::Game(My_view *view): QMainWindow(){
     setFocusPolicy(Qt::StrongFocus);
     build_image();
     build_colors();
-    build_brush();
     display_menu();
 }
 
@@ -37,7 +36,7 @@ Game::~Game(){
             delete pheromone_color_tab[i];
             delete ant_images_tab[i];
         }
-        delete food_brush;
+        delete food_color;
         delete background_color;
         delete pheromone_background;
     }else if(!config_mode){
@@ -89,11 +88,15 @@ dim *Game::get_screen_size(){
 }
 
 void Game::build_colors(){
+    food_color = new QColor(0, 154, 23);
     pheromone_color_tab.push_back(new QColor(200, 0, 0));
     pheromone_color_tab.push_back(new QColor(0, 200, 50));
     pheromone_color_tab.push_back(new QColor(0, 0, 200));
 } 
 
+QColor Game::get_food_color(){
+    return *food_color;
+}
 
 Food *Game::get_food(unsigned int i){
     return food_tab[i];
@@ -104,8 +107,7 @@ int Game::get_nb_food_spot(){
 }
 
 void Game::build_brush(){
-    QColor color(0, 154, 23);
-    this->food_brush = new QBrush(color);
+    
 } 
 
 void Game::init_ant_tab(){

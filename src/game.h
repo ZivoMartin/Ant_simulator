@@ -47,6 +47,7 @@ public:
     QColor *get_color(int i);
     Anthill *get_anthill(int i);
     Food *get_food(unsigned int i);
+    QColor get_food_color();
     My_view *get_view();
     void delete_ant(Ant *ant);
     Ant *get_ant(int i);
@@ -58,6 +59,10 @@ public:
     void switch_state();
     bool get_config_mode();
     void start_the_custom_simulation();
+    void draw_anthill(coord xy);
+    void erase_anthill(My_image *anthill);
+    void draw_food(coord xy);
+    void erase_food(Circle *anthill);
 
     QPixmap *anthill_img;
 
@@ -76,9 +81,6 @@ public:
     static const int ant_damage = 1;
     static const int nb_start_ant = 10; 
 
-    QBrush *food_brush;
-
-
 private:
     My_view *view;
 
@@ -92,7 +94,9 @@ private:
     int iter = 0;
     int view_state = 0;
     QColor *background_color;
-    QColor *pheromone_background; 
+    QColor *pheromone_background;
+    QColor *food_color;
+ 
     My_Button *start_random_simulation_button;
     My_Button *start_configured_simulation;
     My_Button *start_the_custom_simulation_button;

@@ -6,7 +6,7 @@
 class Game;
 class Ant;
 
-class Food : public QGraphicsEllipseItem{
+class Food : public Circle{
 
 public:
     Food(coord xy, Game *game, int h);
@@ -36,7 +36,6 @@ private:
     int nb_food_remain = 30;
     coord position;
     coord origin;
-    int height;
     bool already_have_phero_path = false;
     std::vector<std::vector<Pheromone*>> phero_tab;
     std::vector<std::vector<Pheromone*>> fake_phero_tab; 

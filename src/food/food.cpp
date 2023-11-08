@@ -2,13 +2,10 @@
 #include "../game.h"
 #include "../ant/ant.h"
 
-Food::Food(coord xy, Game *game, int s) : QGraphicsEllipseItem(xy.x, xy.y, s, s){
-    this->height = s;
+Food::Food(coord xy, Game *game, int s) : Circle(game->get_food_color(), game->get_view()->get_scene(), s, xy){
     this->game = game;
     this->position = xy;
     this->origin = xy;
-    this->setBrush(*(game->food_brush));
-    game->get_view()->get_scene()->addItem(this);
     phero_tab.resize(game->get_nb_anthill());
     fake_phero_tab.resize(game->get_nb_anthill());
     ant_tab.resize(game->get_nb_anthill());
@@ -16,7 +13,6 @@ Food::Food(coord xy, Game *game, int s) : QGraphicsEllipseItem(xy.x, xy.y, s, s)
 } 
 
 Food::~Food(){
-    game->get_view()->get_scene()->removeItem(this);
     for(int j=0; j<game->get_nb_anthill(); j++){
         if(get_phero_path_bool(j)){
             unsigned int size = phero_tab[j].size();

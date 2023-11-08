@@ -1,22 +1,18 @@
 #ifndef safe_pheromone
 #define safe_pheromone
 
-#include <QGraphicsEllipseItem>
-#include <QColor>
-#include <QBrush>
-#include <iostream>
-#include "../struct/coord.h"
+#include "../cercles/cercles.h"
 
 class Game;
 
-class Pheromone : public QGraphicsEllipseItem{
+class Pheromone : public Circle{
 
 public:
     Pheromone(coord xy, Game *game, bool display_it, QColor *color);
     ~Pheromone();
     coord *get_pos();
-    void display();
-    void remove();
+    void display() override;
+    void remove() override;
 
     
 private:

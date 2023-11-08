@@ -1,29 +1,24 @@
 #include "food.h"
 #include "../game.h"
 
-Pheromone::Pheromone(coord xy, Game *game, bool display_it, QColor *color) : QGraphicsEllipseItem(xy.x, xy.y, game->phero_img_size, game->phero_img_size){
+Pheromone::Pheromone(coord xy, Game *game, bool display_it, QColor *color) : Circle(*color, game->get_view()->get_scene(), game->pheromone_size, xy){
     this->game = game;
     this->position = xy;
-    QBrush brush(*color);
-    this->setBrush(brush);
-    if(display_it){
-        display();
+    if(!display_it){
+        remove();
     }
 } 
 
 Pheromone::~Pheromone(){
-    if(visible){
-        game->get_view()->get_scene()->removeItem(this);
-    }
 }
 
 void Pheromone::display(){
-    game->get_view()->get_scene()->addItem(this);
+    scene->addItem(this);
     visible = true;
 }
 
 void Pheromone::remove(){
-    game->get_view()->get_scene()->removeItem(this);
+    scene->removeItem(this);
     visible = false;
 }
 
