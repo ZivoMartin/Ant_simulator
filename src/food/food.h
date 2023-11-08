@@ -12,7 +12,7 @@ public:
     Food(coord xy, Game *game, int h);
     ~Food();
     bool decrease_nb_food_remain();
-    coord *get_pos();
+    coord *get_pos() override;
     void set_pos(coord xy);
     void add_pheromone(coord xy, int id_colonie);
     void add_fake_pheromone(coord xy, int id_colonie);

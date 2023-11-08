@@ -32,7 +32,7 @@ public:
     Food *get_current_food();
     Food *get_affiliate_food();
     void get_new_random_dir();
-    coord *get_pos();
+    // coord *get_pos() override;
     Ant *get_opponent();
 
 private:

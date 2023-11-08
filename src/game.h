@@ -91,7 +91,10 @@ private:
     std::vector<QColor*>pheromone_color_tab;
     std::vector<int>nb_ant_tab; 
 
-    int iter = 0;
+    std::vector<Circle*> draw_food_tab;
+    std::vector<My_image*> draw_anthill_tab;
+
+    unsigned int iter = 0;
     int view_state = 0;
     QColor *background_color;
     QColor *pheromone_background;
@@ -99,7 +102,6 @@ private:
  
     My_Button *start_random_simulation_button;
     My_Button *start_configured_simulation;
-    My_Button *start_the_custom_simulation_button;
 
     QScreen* screen;
     dim screen_size;

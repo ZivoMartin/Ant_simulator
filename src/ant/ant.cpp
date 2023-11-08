@@ -81,14 +81,14 @@ void Ant::move(){
     // int ft = food_state;
     if(food_state == 0){
         Food *nearest_spot = get_nearest_spot(); 
-        if(get_dist(nearest_spot->get_pos(), &position)<game->range_ant*game->range_ant){
+        if(game->get_iter()>20 && get_dist(nearest_spot->get_pos(), &position)<game->range_ant*game->range_ant){
             go_on_this_point(nearest_spot->get_pos());
             target_pos = nearest_spot->get_pos();
             current_food = nearest_spot;
             food_state = 1;
         }else{
             Pheromone *nearest_pheromone = get_nearest_pheromone();
-            if(nearest_pheromone != nullptr && get_dist(nearest_pheromone->get_pos(), &position)<game->range_ant*game->range_ant){
+            if(game->get_iter()>20 && nearest_pheromone != nullptr && get_dist(nearest_pheromone->get_pos(), &position)<game->range_ant*game->range_ant){
                 go_on_this_point(nearest_pheromone->get_pos());
                 target_pos = nearest_pheromone->get_pos();
                 food_state = 1; 
@@ -364,6 +364,6 @@ int Ant::go_on_this_point(coord *xy){
     return d;
 }
 
-coord *Ant::get_pos(){
-    return &position;
-} 
+// coord *Ant::get_pos(){
+//     return &position;
+// } 

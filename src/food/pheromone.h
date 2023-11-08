@@ -10,7 +10,7 @@ class Pheromone : public Circle{
 public:
     Pheromone(coord xy, Game *game, bool display_it, QColor *color);
     ~Pheromone();
-    coord *get_pos();
+    coord *get_pos() override;
     void display() override;
     void remove() override;
 

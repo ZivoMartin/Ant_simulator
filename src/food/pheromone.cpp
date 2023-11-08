@@ -10,6 +10,9 @@ Pheromone::Pheromone(coord xy, Game *game, bool display_it, QColor *color) : Cir
 } 
 
 Pheromone::~Pheromone(){
+    if(!visible){
+        display();
+    }
 }
 
 void Pheromone::display(){

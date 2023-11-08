@@ -10,10 +10,10 @@ int random(int min, int max){
 
 
 Game::Game(My_view *view): QMainWindow(){
+    view->set_game(this);
     screen = QGuiApplication::primaryScreen();
     this->screen_size = {screen->geometry().width(), screen->geometry().height()};
     this->view = view;
-    view->set_game(this);
     setFocusPolicy(Qt::StrongFocus);
     build_image();
     build_colors();
@@ -42,6 +42,15 @@ Game::~Game(){
     }else if(!config_mode){
         delete start_random_simulation_button;
         delete start_configured_simulation;
+    }else{
+        unsigned int nb_custom_anthill = draw_anthill_tab.size();
+        unsigned int nb_custom_food = draw_food_tab.size();
+        for(unsigned int i=0; i<nb_custom_anthill; i++){
+            delete draw_anthill_tab[i];
+        }
+        for(unsigned int i=0; i<nb_custom_food; i++){
+            delete draw_food_tab[i];
+        }
     }
 }
 
@@ -52,11 +61,8 @@ void Game::setup_scene(){
     this->background_color = new QColor(210, 180, 140);
     this->pheromone_background = new QColor(20, 20, 20);
     view->set_bg_color(background_color);
-    QPointF centerPoint(map_width/2, map_height/2);
-    view->centerOn(centerPoint);
-    view->get_scene()->setSceneRect(0, 0, map_width, map_height);
-    view->zoom(4);
-
+    view->set_size({screen_size.width*10, screen_size.height*10});
+    view->zoom(3);
 }
 
 My_view *Game::get_view(){
@@ -105,10 +111,6 @@ Food *Game::get_food(unsigned int i){
 int Game::get_nb_food_spot(){
     return food_tab.size();
 }
-
-void Game::build_brush(){
-    
-} 
 
 void Game::init_ant_tab(){
     for(int i=0; i<nb_anthill; i++){
@@ -173,13 +175,24 @@ void Game::display_menu(){
 void Game::start_config(){
     switch_state();
     config_mode = true;
-    start_the_custom_simulation_button = new My_Button("Start", view, {0, 0});
-    connect(start_the_custom_simulation_button, &My_Button::released, this, &Game::start_the_custom_simulation);
 }
 
 void Game::start_the_custom_simulation(){
-    // init_ant_tab();
-    // play();
+    config_mode = false;
+    unsigned int nb_custom_anthill = draw_anthill_tab.size();
+    unsigned int nb_custom_food = draw_food_tab.size();
+    for(unsigned int i=0; i<nb_custom_anthill; i++){
+        anthill_tab.push_back(new Anthill(this, *(draw_anthill_tab[i]->get_pos())));
+        nb_ant_tab.push_back(0);
+        delete draw_anthill_tab[i];
+    }
+    nb_anthill = nb_custom_anthill;
+    init_ant_tab();
+    for(unsigned int i=0; i<nb_custom_food; i++){
+        food_tab.push_back(new Food(*(draw_food_tab[i]->get_pos()), this, size_food));
+        delete draw_food_tab[i];
+    }
+    play();
 }
 
 void Game::start_random_simulation(){
@@ -302,6 +315,14 @@ void Game::remove_ant(int i){
 
 bool Game::get_config_mode(){
     return config_mode;
+}
+
+void Game::draw_anthill(coord xy){
+    draw_anthill_tab.push_back(new My_image(anthill_img, view->get_scene(), xy));   
+}
+
+void Game::draw_food(coord xy){
+    draw_food_tab.push_back(new Circle(*food_color, view->get_scene(), size_food, xy));   
 }
 
 int get_dist(coord *xy1, coord *xy2){

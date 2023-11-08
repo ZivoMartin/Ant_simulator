@@ -15,11 +15,13 @@ class My_image : QGraphicsPixmapItem{
 public:
     My_image(QPixmap *image, QGraphicsScene *scene, coord xy);
     ~My_image();
+    virtual coord *get_pos();
     void set_pos_img(coord xy);
     void rotate(int angle);
 
 private:
     QGraphicsScene *scene;
+    coord position;
 };
 
 #endif
