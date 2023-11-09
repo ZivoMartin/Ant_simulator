@@ -22,20 +22,24 @@ Game::Game(My_view *view): QMainWindow(){
 
 Game::~Game(){
     if(iter != 0){
+        printf("1\n");
         unsigned int i = ant_tab.size();
         while(i != 0){
             i -= 1;
             delete ant_tab[i];
         }
+        printf("2\n");
         int size = food_tab.size();
         for(int i=0; i<size; i++){
             delete food_tab[i];
         }
+        printf("3\n");
         for(int i=0; i<nb_anthill; i++){
             delete anthill_tab[i];
             delete pheromone_color_tab[i];
             delete ant_images_tab[i];
         }
+        printf("4\n");
         delete food_color;
         delete background_color;
         delete pheromone_background;
@@ -84,7 +88,7 @@ void Game::build_image(){
     ant_images_tab[4]->load("../images/light_green_ant.png");
     ant_images_tab[5]->load("../images/gris_ant.png");
     for(int i=0; i<nb_different_colors; i++){
-        *ant_images_tab[i] = ant_images_tab[i]->scaled(70, 70);
+        *ant_images_tab[i] = ant_images_tab[i]->scaled(ant_size, ant_size);
     }
     anthill_img = new QPixmap();
     anthill_img->load("../images/anthill.png");
@@ -99,8 +103,11 @@ dim *Game::get_screen_size(){
 void Game::build_colors(){
     food_color = new QColor(0, 154, 23);
     pheromone_color_tab.push_back(new QColor(200, 0, 0));
-    pheromone_color_tab.push_back(new QColor(0, 200, 50));
+    pheromone_color_tab.push_back(new QColor(0, 51, 15));
     pheromone_color_tab.push_back(new QColor(0, 0, 200));
+    pheromone_color_tab.push_back(new QColor(200, 0, 200));
+    pheromone_color_tab.push_back(new QColor(0, 183, 15));
+    pheromone_color_tab.push_back(new QColor(175, 175, 175));
 } 
 
 QColor Game::get_food_color(){
@@ -235,7 +242,7 @@ void Game::move_ants(){
 void Game::actualise_ant_state(Food *deleted_food){
     int size = ant_tab.size();
     for(int i=0; i<size; i++){
-        if((ant_tab[i]->get_food_state() == 1 || ant_tab[i]->get_food_state() == 2) && ant_tab[i]->get_current_food() == deleted_food){
+        if((ant_tab[i]->get_food_state() == 1 || ant_tab[i]->get_food_state() == 2) && (ant_tab[i]->get_current_food() == deleted_food || ant_tab[i]->get_affiliate_food() == deleted_food)){
             ant_tab[i]->reset_state();
         }
     }
@@ -322,7 +329,16 @@ bool Game::get_config_mode(){
     return config_mode;
 }
 
-void Game::draw_anthill(coord xy){
+void Game::config_right_click(coord xy){
+    unsigned int s=draw_anthill_tab.size();
+    for(unsigned int i=0; i<s; i++){
+        coord *anthill_pos = draw_anthill_tab[i]->get_pos();
+        if(xy.x < anthill_pos->x+draw_anthill_tab[i]->get_size().width && xy.x > anthill_pos->x-draw_anthill_tab[i]->get_size().width/2 && xy.y > anthill_pos->y-draw_anthill_tab[i]->get_size().height/2 && xy.y < anthill_pos->y+draw_anthill_tab[i]->get_size().height){
+            delete draw_anthill_tab[i];
+            draw_anthill_tab.erase(draw_anthill_tab.begin()+i);
+            return;
+        }
+    }
     draw_anthill_tab.push_back(new My_image(anthill_img, view->get_scene(), xy));   
 }
 
@@ -367,11 +383,19 @@ void Game::delete_selected_food(){
 
 void Game::increase_selected_food(){
     if(selected_food != nullptr){
+        unsigned int i;
+        unsigned int s = draw_food_tab.size();
+        for(i=0; i<s; i++){
+            if(draw_food_tab[i] == selected_food){
+                break;
+            }
+        }
         int new_s = selected_food->get_size() + increase_of_size;
         coord xy = *(selected_food->get_pos());
         delete selected_food;
         selected_food = new Circle(*food_color, view->get_scene(), new_s, xy);
         selected_food->up_light();
+        draw_food_tab[i] = selected_food;
     }
 }
 

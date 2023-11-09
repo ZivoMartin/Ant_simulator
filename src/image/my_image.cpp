@@ -1,6 +1,7 @@
 #include "my_image.h"
 
 My_image::My_image(QPixmap *image, QGraphicsScene *scene, coord xy) : QGraphicsPixmapItem(*image){
+    this->image = image;
     set_pos_img(xy);
     this->position = xy;
     scene->addItem(this);
@@ -22,4 +23,8 @@ void My_image::rotate(int angle){
 
 coord *My_image::get_pos(){
     return &position;
+}
+
+dim My_image::get_size(){
+    return {static_cast<int>(image->size().width()), static_cast<int>(image->size().width())};
 }

@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsScene>
 #include "../struct/coord.h"
+#include "../struct/size.h"
 #include <cmath>
 
 
@@ -18,10 +19,12 @@ public:
     virtual coord *get_pos();
     void set_pos_img(coord xy);
     void rotate(int angle);
+    dim get_size();
 
 private:
     QGraphicsScene *scene;
     coord position;
+    QPixmap *image;
 };
 
 #endif

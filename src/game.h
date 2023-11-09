@@ -59,7 +59,7 @@ public:
     void switch_state();
     bool get_config_mode();
     void start_the_custom_simulation();
-    void draw_anthill(coord xy);
+    void config_right_click(coord xy);
     void erase_anthill(My_image *anthill);
     void config_left_click(coord xy);
     void erase_food(Circle *anthill);
@@ -84,6 +84,7 @@ public:
     static const int increase_of_size = 10;
     static const int nb_start_ant = 10; 
     static const int anthill_size = 200;
+    static const int ant_size = 70;
 
 private:
     My_view *view;

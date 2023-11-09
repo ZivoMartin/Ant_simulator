@@ -44,7 +44,7 @@ void My_view::mousePressEvent(QMouseEvent* event){
         if(event->button() == 1){
             game->config_left_click(coord_clic);
         }else if(event->button() == 2){
-            game->draw_anthill(coord_clic);
+            game->config_right_click(coord_clic);
         }
     }
 }

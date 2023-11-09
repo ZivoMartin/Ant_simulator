@@ -9,6 +9,8 @@ Food::Food(coord xy, Game *game, int s) : Circle(game->get_food_color(), game->g
     position.y += s/2;
     this->origin = xy;
     this->size = s;
+    this->range_to_see_it = 10*s;
+    this->range_to_join_fight = range_to_see_it*0.75;
     this->nb_food_remain = size/3;
     phero_tab.resize(game->get_nb_anthill());
     fake_phero_tab.resize(game->get_nb_anthill());
@@ -125,4 +127,12 @@ void Food::reset_opponent(Ant *ant){
             }
         }
     }
+}
+
+int Food::get_range_to_see_it(){
+    return range_to_see_it;
+}
+
+int Food::get_range_to_join_fight(){
+    return range_to_join_fight;
 }

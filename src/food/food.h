@@ -29,11 +29,15 @@ public:
     void remove_ant(Ant *ant);
     int get_nb_ants(int id_colonie);
     void reset_opponent(Ant *ant);
+    int get_range_to_see_it();
+    int get_range_to_join_fight();
 
 private:
     Game *game;
     int nb_food_remain = 30;
     int size;
+    int range_to_see_it;
+    int range_to_join_fight;
     coord position;
     coord origin;
     bool already_have_phero_path = false;

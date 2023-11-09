@@ -82,7 +82,7 @@ void Ant::move(){
     // printf("%d\n", ft);
     if(food_state == 0){
         Food *nearest_spot = get_nearest_spot(); 
-        if(nearest_spot != nullptr && game->get_iter()>20 && get_dist(nearest_spot->get_pos(), &position)<game->range_ant*game->range_ant){
+        if(nearest_spot != nullptr && game->get_iter()>20 && get_dist(nearest_spot->get_pos(), &position)<nearest_spot->get_range_to_see_it()*nearest_spot->get_range_to_see_it()){
             go_on_this_point(nearest_spot->get_pos());
             target_pos = nearest_spot->get_pos();
             current_food = nearest_spot;
@@ -103,7 +103,7 @@ void Ant::move(){
     }else if(food_state == 1 || food_state == 3){
         if(game->get_iter() % 7 == 0){
             int d = go_on_this_point(target_pos);
-            if(current_food != nullptr && !in_fight_zone && d<game->range_to_join_fight && food_state == 1){
+            if(current_food != nullptr && !in_fight_zone && d<current_food->get_range_to_join_fight() && food_state == 1){
                 current_food->add_ant(this);
                 in_fight_zone = true;
             }
@@ -120,13 +120,22 @@ void Ant::move(){
         if(game->get_iter() % 10 == 0 && food_state == 3 && authorised_to_place_pheromone){
             current_food->add_fake_pheromone(position, id_colonie);
         }
-        int s;
-        if(current_food != nullptr && target_pos != anthill->get_pos()){
-            s = current_food->get_size()/2;            
+        int s1;
+        int s2;
+        if(opponent != nullptr){
+            s1 = 0;
+            //s1 = s2 = game->ant_size;
+            s1 = s2 = 10;
+        }else if(target_pos == anthill->get_pos()){
+            s1 = 0;
+            s1 = s2 = 10;
+            // s1 = s2 = game->anthill_size;
+        }else if(current_food != nullptr){
+            s1 = s2 = current_food->get_size()/2;            
         }else{
-            s = 10;
+            s1 = s2 = game->pheromone_size/2;
         }
-        if(target_pos->x-s <= position.x && target_pos->x+s >= position.x && target_pos->y-s <= position.y && target_pos->y+s >= position.y){
+        if(target_pos->x+s2 >= position.x && target_pos->x-s1 <= position.x && target_pos->y+s2 >= position.y && target_pos->y-s1 <= position.y){
             if(food_state == 3){
                 delete food_transported;
                 food_transported = nullptr;
@@ -142,13 +151,14 @@ void Ant::move(){
                 }
             }else if(current_food == nullptr && food_state == 1){
                 current_food = affiliate_food;
-                target_pos = affiliate_food->get_pos();
+                affiliate_food = nullptr;
+                target_pos = current_food->get_pos();
             }else{
                 food_state = 2;
             }
             current_dir.x = 0;
             current_dir.y = 0;
-        }
+       }
     }else if(food_state == 2){
         state_count -= 1;
         if(state_count == 0){
@@ -317,13 +327,13 @@ int get_angle_value(int angle){
 
 Ant *Ant::nearest_ant(){
     Ant *result = nullptr;
-    int min = game->range_ant*game->range_ant*10;
+    int min = -1;
     for(int i=0; i<game->get_nb_anthill(); i++){
         if(i != id_colonie){
             int size = current_food->get_nb_ants(i);
             for(int j=0; j<size; j++){
                 int d = get_dist(&position, current_food->get_ant(j, i)->get_pos()); 
-                if(d<min){
+                if(d<min || min == -1){
                     min = d;
                     result = current_food->get_ant(j, i);
                 }
