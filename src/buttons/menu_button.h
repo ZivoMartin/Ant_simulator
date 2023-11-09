@@ -12,11 +12,11 @@
 #include "../struct/rgb.h"
 
 
-class My_Button : public QPushButton{
+class Menu_Button : public QPushButton{
 
 public:
-    My_Button(QString txt, My_view *view, coord xy);
-    ~My_Button();
+    Menu_Button(QString txt, My_view *view, coord xy);
+    ~Menu_Button();
     void set_color(rgb *color);
 
 private:

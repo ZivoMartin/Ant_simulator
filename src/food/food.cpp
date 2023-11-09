@@ -6,6 +6,8 @@ Food::Food(coord xy, Game *game, int s) : Circle(game->get_food_color(), game->g
     this->game = game;
     this->position = xy;
     this->origin = xy;
+    this->size = s;
+    this->nb_food_remain = size/3;
     phero_tab.resize(game->get_nb_anthill());
     fake_phero_tab.resize(game->get_nb_anthill());
     ant_tab.resize(game->get_nb_anthill());
@@ -50,9 +52,7 @@ bool Food::decrease_nb_food_remain(){
 }
 
 
-void Food::set_pos(coord xy){
-    setPos(xy.x-origin.x, xy.y - origin.y);
-}
+
 
 void Food::add_pheromone(coord xy, int id_colonie){
     phero_tab[id_colonie].push_back(new Pheromone(xy, game, false, game->get_color(id_colonie)));

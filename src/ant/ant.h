@@ -49,7 +49,7 @@ private:
     int food_state = 0;
     int state_count;
     Food *current_food = nullptr;
-    Food *food_transported = nullptr;
+    Circle *food_transported = nullptr;
     Food *affiliate_food = nullptr;
     bool authorised_to_place_pheromone = false;
     int id_colonie;

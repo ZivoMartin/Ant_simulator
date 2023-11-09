@@ -27,6 +27,8 @@ void My_view::keyPressEvent(QKeyEvent* event){
     }else if(game->get_config_mode()){
         if(key == Qt::Key_Return){
             game->start_the_custom_simulation();
+        }else if(key == Qt::Key_A){
+            game->delete_selected_food();
         }
     }
 }
@@ -36,7 +38,7 @@ void My_view::mousePressEvent(QMouseEvent* event){
     if(game->get_config_mode() && event->type() == QEvent::MouseButtonPress){
         coord coord_clic = convert(mapToScene(event->pos()));
         if(event->button() == 1){
-            game->draw_food(coord_clic);
+            game->config_left_click(coord_clic);
         }else if(event->button() == 2){
             game->draw_anthill(coord_clic);
         }

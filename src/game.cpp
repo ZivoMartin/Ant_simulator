@@ -166,10 +166,10 @@ void Game::add_ant(int id_colonie){
 
 void Game::display_menu(){
     //view->set_bg_img("/home/martin/Travail/Perso/Ant_simulator/images/background.png");
-    start_random_simulation_button = new My_Button("Start with a random simulation.", view, {static_cast<int>(screen_size.width*0.35), static_cast<int>(screen_size.height*0.5)});
-    connect(start_random_simulation_button, &My_Button::released, this, &Game::start_random_simulation);
-    start_configured_simulation = new My_Button("Config a simulation.", view, {static_cast<int>(screen_size.width*0.55), static_cast<int>(screen_size.height*0.5)});
-    connect(start_configured_simulation, &My_Button::released, this, &Game::start_config);
+    start_random_simulation_button = new Menu_Button("Start with a random simulation.", view, {static_cast<int>(screen_size.width*0.35), static_cast<int>(screen_size.height*0.5)});
+    connect(start_random_simulation_button, &Menu_Button::released, this, &Game::start_random_simulation);
+    start_configured_simulation = new Menu_Button("Config a simulation.", view, {static_cast<int>(screen_size.width*0.55), static_cast<int>(screen_size.height*0.5)});
+    connect(start_configured_simulation, &Menu_Button::released, this, &Game::start_config);
 }
 
 void Game::start_config(){
@@ -200,6 +200,8 @@ void Game::start_random_simulation(){
     init_anthill_tab();
     init_ant_tab();
     init_food_spots();
+    start_random_simulation_button = new Menu_Button("exemple", view, {0, 0});
+    view->get_scene()->addWidget(start_random_simulation_button);
     play();
 }
 
@@ -213,9 +215,11 @@ void Game::switch_state(){
 
 void Game::play(){
     QTimer::singleShot(20, this, [=](){
-        move_ants();
-        view->update();
-        iter += 1;
+        if(food_tab.size() > 0){
+            move_ants();
+            view->update();
+            iter += 1;
+        }
         play();
     });
 }
@@ -321,8 +325,43 @@ void Game::draw_anthill(coord xy){
     draw_anthill_tab.push_back(new My_image(anthill_img, view->get_scene(), xy));   
 }
 
-void Game::draw_food(coord xy){
-    draw_food_tab.push_back(new Circle(*food_color, view->get_scene(), size_food, xy));   
+void Game::config_left_click(coord xy){
+    bool select_click = false;
+    unsigned int s=draw_food_tab.size();
+    for(unsigned int i=0; i<s; i++){
+        coord *food_pos = draw_food_tab[i]->get_pos();
+        if(xy.x < food_pos->x+draw_food_tab[i]->get_size() && xy.x > food_pos->x-draw_food_tab[i]->get_size()/2 && xy.y > food_pos->y-draw_food_tab[i]->get_size()/2 && xy.y < food_pos->y+draw_food_tab[i]->get_size()){
+            if(selected_food != nullptr){
+                selected_food->off_light();
+            }
+            selected_food = draw_food_tab[i];
+            selected_food->up_light();
+            select_click = true;
+            break;
+        }
+    }
+    if(!select_click){
+        if(selected_food != nullptr){
+            selected_food->off_light();
+        }
+        selected_food = new Circle(*food_color, view->get_scene(), size_food, xy);
+        draw_food_tab.push_back(selected_food);   
+        selected_food->up_light();
+    }
+}
+
+void Game::delete_selected_food(){
+    if(selected_food != nullptr){
+        unsigned int s = draw_food_tab.size();
+        for(unsigned int i=0; i<s; i++){
+            if(draw_food_tab[i] == selected_food){
+                delete selected_food;
+                selected_food = nullptr;
+                draw_food_tab.erase(draw_food_tab.begin() + i);
+                break;
+        }
+    }
+    }
 }
 
 int get_dist(coord *xy1, coord *xy2){

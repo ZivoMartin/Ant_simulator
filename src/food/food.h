@@ -13,7 +13,6 @@ public:
     ~Food();
     bool decrease_nb_food_remain();
     coord *get_pos() override;
-    void set_pos(coord xy);
     void add_pheromone(coord xy, int id_colonie);
     void add_fake_pheromone(coord xy, int id_colonie);
     void set_main_ant(Ant *ant);
@@ -34,6 +33,7 @@ public:
 private:
     Game *game;
     int nb_food_remain = 30;
+    int size;
     coord position;
     coord origin;
     bool already_have_phero_path = false;

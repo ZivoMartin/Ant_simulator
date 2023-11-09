@@ -1,6 +1,6 @@
-#include "my_button.h"
+#include "menu_button.h"
 
-My_Button::My_Button(QString txt, My_view *view, coord xy) : QPushButton(txt, view){
+Menu_Button::Menu_Button(QString txt, My_view *view, coord xy) : QPushButton(txt, view){
     this->position = xy;
     this->view = view;
     this->color = new QColor(100, 200, 100);
@@ -10,7 +10,7 @@ My_Button::My_Button(QString txt, My_view *view, coord xy) : QPushButton(txt, vi
     this->setPalette(*palette);
 }
 
-My_Button::~My_Button(){
+Menu_Button::~Menu_Button(){
 
 }
 

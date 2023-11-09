@@ -7,16 +7,16 @@
 #include <QScreen>
 #include <QPointF>
 #include <QApplication>
-#include <QGuiApplication>
 #include "view/my_view.h"
 #include "image/my_image.h"
 #include "ant/ant.h"
 #include "ant/anthill.h"
 #include "food/food.h"
-#include "menu_widget/my_button.h"
+#include "buttons/menu_button.h"
 #include "struct/size.h"
+#include "buttons/size_button.h"
 
-class My_Button;
+class Menu_Button;
 
 class Game : public QMainWindow{
 
@@ -61,8 +61,9 @@ public:
     void start_the_custom_simulation();
     void draw_anthill(coord xy);
     void erase_anthill(My_image *anthill);
-    void draw_food(coord xy);
+    void config_left_click(coord xy);
     void erase_food(Circle *anthill);
+    void delete_selected_food();
 
     QPixmap *anthill_img;
 
@@ -100,8 +101,10 @@ private:
     QColor *pheromone_background;
     QColor *food_color;
  
-    My_Button *start_random_simulation_button;
-    My_Button *start_configured_simulation;
+    Menu_Button *start_random_simulation_button;
+    Menu_Button *start_configured_simulation;
+
+    Size_Button *test_button;
 
     QScreen* screen;
     dim screen_size;
@@ -110,6 +113,8 @@ private:
     int nb_anthill = 3;
     int nb_start_food_spot = 30; 
     bool config_mode = false;
+
+    Circle *selected_food = nullptr;
 };
 
 int random(int min, int max);
