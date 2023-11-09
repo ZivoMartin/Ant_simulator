@@ -80,12 +80,15 @@ void Game::build_image(){
     ant_images_tab[0]->load("../images/red_ant.png");
     ant_images_tab[1]->load("../images/green_ant.png");
     ant_images_tab[2]->load("../images/blue_ant.png");
+    ant_images_tab[3]->load("../images/purple_ant.png");
+    ant_images_tab[4]->load("../images/light_green_ant.png");
+    ant_images_tab[5]->load("../images/gris_ant.png");
     for(int i=0; i<nb_different_colors; i++){
         *ant_images_tab[i] = ant_images_tab[i]->scaled(70, 70);
     }
     anthill_img = new QPixmap();
     anthill_img->load("../images/anthill.png");
-    *anthill_img = anthill_img->scaled(200, 200);
+    *anthill_img = anthill_img->scaled(anthill_size, anthill_size);
     
 } 
 
@@ -189,7 +192,7 @@ void Game::start_the_custom_simulation(){
     nb_anthill = nb_custom_anthill;
     init_ant_tab();
     for(unsigned int i=0; i<nb_custom_food; i++){
-        food_tab.push_back(new Food(*(draw_food_tab[i]->get_pos()), this, size_food));
+        food_tab.push_back(new Food(*(draw_food_tab[i]->get_pos()), this, draw_food_tab[i]->get_size()));
         delete draw_food_tab[i];
     }
     play();
@@ -215,11 +218,9 @@ void Game::switch_state(){
 
 void Game::play(){
     QTimer::singleShot(20, this, [=](){
-        if(food_tab.size() > 0){
-            move_ants();
-            view->update();
-            iter += 1;
-        }
+        move_ants();
+        view->update();
+        iter += 1;
         play();
     });
 }
@@ -361,6 +362,26 @@ void Game::delete_selected_food(){
                 break;
         }
     }
+    }
+}
+
+void Game::increase_selected_food(){
+    if(selected_food != nullptr){
+        int new_s = selected_food->get_size() + increase_of_size;
+        coord xy = *(selected_food->get_pos());
+        delete selected_food;
+        selected_food = new Circle(*food_color, view->get_scene(), new_s, xy);
+        selected_food->up_light();
+    }
+}
+
+void Game::decrease_selected_food(){
+    if(selected_food != nullptr){
+        int new_s = selected_food->get_size() - increase_of_size;
+        coord xy = *(selected_food->get_pos());
+        delete selected_food;
+        selected_food = new Circle(*food_color, view->get_scene(), new_s, xy);
+        selected_food->up_light();
     }
 }
 

@@ -5,6 +5,8 @@
 Food::Food(coord xy, Game *game, int s) : Circle(game->get_food_color(), game->get_view()->get_scene(), s, xy){
     this->game = game;
     this->position = xy;
+    position.x += s/2;
+    position.y += s/2;
     this->origin = xy;
     this->size = s;
     this->nb_food_remain = size/3;

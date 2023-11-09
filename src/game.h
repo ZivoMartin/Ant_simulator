@@ -64,7 +64,8 @@ public:
     void config_left_click(coord xy);
     void erase_food(Circle *anthill);
     void delete_selected_food();
-
+    void increase_selected_food();
+    void decrease_selected_food();
     QPixmap *anthill_img;
 
     static const int map_height = 15000;
@@ -80,7 +81,9 @@ public:
     static const int range_to_join_fight = 450;
     static const int ant_base_hp = 120;
     static const int ant_damage = 1;
+    static const int increase_of_size = 10;
     static const int nb_start_ant = 10; 
+    static const int anthill_size = 200;
 
 private:
     My_view *view;
@@ -109,7 +112,7 @@ private:
     QScreen* screen;
     dim screen_size;
 
-    int nb_different_colors = 3;
+    int nb_different_colors = 6;
     int nb_anthill = 3;
     int nb_start_food_spot = 30; 
     bool config_mode = false;

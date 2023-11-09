@@ -81,29 +81,25 @@ void Ant::move(){
     // int ft = food_state;
     // printf("%d\n", ft);
     if(food_state == 0){
-        if(game->get_nb_food_spot() >0){
-            Food *nearest_spot = get_nearest_spot(); 
-            if(game->get_iter()>20 && get_dist(nearest_spot->get_pos(), &position)<game->range_ant*game->range_ant){
-                go_on_this_point(nearest_spot->get_pos());
-                target_pos = nearest_spot->get_pos();
-                current_food = nearest_spot;
-                food_state = 1;
-            }else{
-                Pheromone *nearest_pheromone = get_nearest_pheromone();
-                if(game->get_iter()>20 && nearest_pheromone != nullptr && get_dist(nearest_pheromone->get_pos(), &position)<game->range_ant*game->range_ant){
-                    go_on_this_point(nearest_pheromone->get_pos());
-                    target_pos = nearest_pheromone->get_pos();
-                    food_state = 1; 
-                }else if(random_count == 0){
-                    get_new_random_dir();
-                    random_count = 150;
-                }else{
-                    random_count -= 1;
-                }   
-            }       
+        Food *nearest_spot = get_nearest_spot(); 
+        if(nearest_spot != nullptr && game->get_iter()>20 && get_dist(nearest_spot->get_pos(), &position)<game->range_ant*game->range_ant){
+            go_on_this_point(nearest_spot->get_pos());
+            target_pos = nearest_spot->get_pos();
+            current_food = nearest_spot;
+            food_state = 1;
         }else{
-            current_dir = {0, 0};
-        }
+            Pheromone *nearest_pheromone = get_nearest_pheromone();
+            if(nearest_pheromone != nullptr && game->get_iter()>20 && nearest_pheromone != nullptr && get_dist(nearest_pheromone->get_pos(), &position)<game->range_ant*game->range_ant){
+                go_on_this_point(nearest_pheromone->get_pos());
+                target_pos = nearest_pheromone->get_pos();
+                food_state = 1; 
+            }else if(random_count == 0){
+                get_new_random_dir();
+                random_count = 150;
+            }else{
+                random_count -= 1;
+            }   
+        }       
     }else if(food_state == 1 || food_state == 3){
         if(game->get_iter() % 7 == 0){
             int d = go_on_this_point(target_pos);
@@ -124,8 +120,10 @@ void Ant::move(){
         if(game->get_iter() % 10 == 0 && food_state == 3 && authorised_to_place_pheromone){
             current_food->add_fake_pheromone(position, id_colonie);
         }
-        int s = game->size_food/2;
-        if(opponent != nullptr){
+        int s;
+        if(current_food != nullptr && target_pos != anthill->get_pos()){
+            s = current_food->get_size()/2;            
+        }else{
             s = 10;
         }
         if(target_pos->x-s <= position.x && target_pos->x+s >= position.x && target_pos->y-s <= position.y && target_pos->y+s >= position.y){
@@ -201,6 +199,7 @@ void Ant::reset_opponent(){
 }
 
 Pheromone *Ant::get_nearest_pheromone(){
+    if(game->get_nb_food_spot() == 0) return nullptr;
     int min = -1;
     int i_spot = -1;
     int i_pheromone = -1;
@@ -243,6 +242,7 @@ bool Ant::take_damage(int damage){
 
 Food *Ant::get_nearest_spot(){
     int size = game->get_nb_food_spot();
+    if(size == 0) return nullptr;
     int min = get_dist(&position, game->get_food(0)->get_pos());
     int result = 0;
     for(int i=1; i<size; i++){

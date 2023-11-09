@@ -16,19 +16,23 @@ QGraphicsScene * My_view::get_scene(){
 
 void My_view::keyPressEvent(QKeyEvent* event){
     int key = event->key();
-    if(game->get_iter() != 0){
+    if(key == Qt::Key_Up){
+        zoom(1.2);
+    }else if(key == Qt::Key_Down){
+        zoom(0.8);
+    }else if(game->get_iter() != 0){
         if(key == Qt::Key_A) {
             game->change_view_state();
-        }else if(key == Qt::Key_Up){
-            zoom(1.2);
-        }else if(key == Qt::Key_Down){
-            zoom(0.8);
         }
     }else if(game->get_config_mode()){
         if(key == Qt::Key_Return){
             game->start_the_custom_simulation();
-        }else if(key == Qt::Key_A){
+        }else if(key == Qt::Key_D){
             game->delete_selected_food();
+        }else if(key == Qt::Key_P){
+            game->increase_selected_food();
+        }else if(key == Qt::Key_M){
+            game->decrease_selected_food();
         }
     }
 }
