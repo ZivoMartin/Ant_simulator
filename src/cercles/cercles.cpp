@@ -1,5 +1,4 @@
 #include "cercles.h"
-#include "../buttons/size_button.h"
 
 Circle::Circle(QColor color, QGraphicsScene *scene, int size, coord xy) : QGraphicsEllipseItem(xy.x, xy.y, size, size){
     this->scene = scene;
