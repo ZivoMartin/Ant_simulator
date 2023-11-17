@@ -14,7 +14,6 @@
 #include "food/food.h"
 #include "buttons/menu_button.h"
 #include "struct/size.h"
-#include "buttons/size_button.h"
 
 class Menu_Button;
 
