@@ -22,24 +22,20 @@ Game::Game(My_view *view): QMainWindow(){
 
 Game::~Game(){
     if(iter != 0){
-        printf("1\n");
         unsigned int i = ant_tab.size();
         while(i != 0){
             i -= 1;
             delete ant_tab[i];
         }
-        printf("2\n");
         int size = food_tab.size();
         for(int i=0; i<size; i++){
             delete food_tab[i];
         }
-        printf("3\n");
         for(int i=0; i<nb_anthill; i++){
             delete anthill_tab[i];
             delete pheromone_color_tab[i];
             delete ant_images_tab[i];
         }
-        printf("4\n");
         delete food_color;
         delete background_color;
         delete pheromone_background;
