@@ -109,7 +109,7 @@ private:
 
     Size_Button *test_button;
 
-    QScreen* screen;
+    QScreen *screen;
     dim screen_size;
 
     int nb_different_colors = 6;

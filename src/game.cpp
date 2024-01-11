@@ -1,13 +1,13 @@
 #include "game.h"
 
 
-int random(int min, int max){
-    std::random_device rd;
-    std::mt19937 generator(rd());
-    std::uniform_int_distribution<int> random_nbr(min, max);
-    return(random_nbr(generator));
-}
+std::mt19937 generator(std::random_device{}());
 
+
+int random(int min, int max){
+    std::uniform_int_distribution<int> random_nbr(min, max);
+    return random_nbr(generator);
+}
 
 Game::Game(My_view *view): QMainWindow(){
     view->set_game(this);
